@@ -93,7 +93,7 @@ gulp.task('connect', ['build'], function() {
 });
 
 gulp.task('watch', function() {
-  gulp.watch('src/index.jade', ['html']);
+  gulp.watch('src/**/*.jade', ['html']);
   gulp.watch('src/scripts/**/*.js', ['js']);
   gulp.watch('src/styles/**/*.styl', ['css']);
   gulp.watch('src/images/**/*', ['images']);
