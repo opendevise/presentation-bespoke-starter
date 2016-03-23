@@ -1,0 +1,55 @@
+.deck
+  overflow hidden
+  background-color $color-surface
+  font-family $font-family-base
+  font-size $font-size-base
+  color $color-text
+  font-feature-settings "kern" 1
+  text-rendering optimizeLegibility
+  -webkit-font-smoothing antialiased
+  -moz-osx-font-smoothing grayscale
+  // NOTE hide deck and slide content until Bespoke.js classes have been added
+  &:not(.bespoke-parent), section:not(.bespoke-slide) { display: none }
+
+.bespoke-parent, .bespoke-scale-parent
+  position absolute
+  top 0
+  right 0
+  bottom 0
+  left 0
+
+.bespoke-scale-parent, .bespoke-slide, .bespoke-slide-canvas
+  pointer-events none
+
+.bespoke-slide
+  overflow hidden
+  opacity 0 // NOTE force opacity to start at 0 to avoid transition on load when using bespoke-scale
+  background-color $color-canvas
+  position absolute
+  top 50%
+  left 50%
+  width $slide-width
+  margin-left -(@width / 2)
+  height $slide-height
+  margin-top -(@height / 2)
+  padding $slide-padding
+  display flex
+  align-items center
+  justify-content center
+  flex-direction column
+  transition $slide-transition
+
+.bespoke-active
+  pointer-events auto
+  opacity 1
+  z-index 1 // NOTE Webkit requires z-index to be 1 for elements to receive focus (may no longer apply)
+  &.no-transition { transition: none }
+
+.bespoke-bullet-inactive
+  visibility hidden
+
+.fade .bespoke-bullet-active:not(.bespoke-bullet-current)
+  opacity 0.1
+
+.vanish  .bespoke-bullet-active:not(.bespoke-bullet-current)
+  opacity 0

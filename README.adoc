@@ -1,0 +1,46 @@
+= Bespoke.js Starter Presentation
+:experimental:
+
+A starter presentation for Bespoke.js.
+
+== Building the presentation
+
+=== Prerequisites
+
+In order to use this converter, you must satisify the prerequisites of Bespoke.js.
+
+. https://nodejs.org[Node.js] >= 0.12 footnote:[We strongly recommend using https://github.com/creationix/nvm[nvm] to manage Node.]
+. http://gulpjs.com[Gulp] (command line interface only)
+
+ $ npm install -g gulp-cli
+
+=== Setup
+
+Next, clone the repository and switch to the project directory:
+
+ $ git clone https://github.com/opendevise/presentation-bespoke-starter.git
+   cd presentation-bespoke-starter
+
+Then, install the required dependencies:
+
+ $ npm i
+
+Now you're all set to build the presentation!
+
+=== Building the static version
+
+You can build a static version of the slides using the following command:
+
+ $ gulp
+
+The files are built into the _public_ directory.
+You can then view the slides by navigating to _public/index.html_ in your browser.
+
+=== Launching the preview server
+
+The preview server will monitor files for changes and automatically update the presentation.
+You can launch the preview server using:
+
+ $ gulp serve
+
+Once the server is running, you can view the slides by navigating to \http://localhost:8000 in your browser.
