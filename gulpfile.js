@@ -3,9 +3,11 @@ var pkg = require('./package.json'),
   autoprefixer = require('gulp-autoprefixer'),
   browserify = require('browserify'),
   buffer = require('vinyl-buffer'),
+  chmod = require('gulp-chmod'),
   connect = require('gulp-connect'),
   csso = require('gulp-csso'),
   del = require('del'),
+  exec = require('gulp-exec'),
   ghpages = require('gh-pages'),
   gulp = require('gulp'),
   gutil = require('gulp-util'),
@@ -33,10 +35,12 @@ gulp.task('js', ['clean:js'], function() {
 });
 
 gulp.task('html', ['clean:html'], function() {
-  return gulp.src('src/index.jade')
+  return gulp.src('src/index.adoc')
     .pipe(isDist ? through() : plumber())
-    .pipe(jade({ pretty: '  ' }))
+    .pipe(exec('bundle exec asciidoctor-bespoke -o - src/index.adoc', { pipeStdout: true }))
+    .pipe(exec.reporter({ stdout: false }))
     .pipe(rename('index.html'))
+    .pipe(chmod(644))
     .pipe(gulp.dest('public'))
     .pipe(connect.reload());
 });
@@ -93,7 +97,7 @@ gulp.task('connect', ['build'], function() {
 });
 
 gulp.task('watch', function() {
-  gulp.watch('src/**/*.jade', ['html']);
+  gulp.watch('src/**/*.adoc', ['html']);
   gulp.watch('src/scripts/**/*.js', ['js']);
   gulp.watch('src/styles/**/*.styl', ['css']);
   gulp.watch('src/images/**/*', ['images']);

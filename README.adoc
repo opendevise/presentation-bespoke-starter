@@ -1,29 +1,42 @@
 = Bespoke.js Starter Presentation
 :experimental:
 
-A starter presentation for Bespoke.js.
+A starter presentation for Bespoke.js that integrates asciidoctor-bespoke for generating the HTML from AsciiDoc.
 
 == Building the presentation
 
 === Prerequisites
 
-In order to use this project, you must first satisify the prerequisites of Bespoke.js.
+In order to use this project, you must first satisify the prerequisites of Bespoke.js and Asciidoctor.
+
+For Bespoke.js::
 
 . https://nodejs.org[Node.js] >= 0.12 footnote:[We strongly recommend using https://github.com/creationix/nvm[nvm] to manage Node.]
 . http://gulpjs.com[Gulp] (command line interface only)
 
  $ npm install -g gulp-cli
 
+For Asciidoctor::
+
+. https://www.ruby-lang.org[Ruby] >= 2 footnote:[We strongly recommend using http://rvm.io[RVM] to manage Ruby.]
+. http://bundler.io[Bundler]
+
+ $ rvm use 2.3.0 --install # (optional)
+ $ gem install bundler
+
 === Setup
 
 Next, clone the repository and switch to the project directory:
 
- $ git clone https://github.com/opendevise/presentation-bespoke-starter.git
+ $ git clone -b asciidoc https://github.com/opendevise/presentation-bespoke-starter.git
    cd presentation-bespoke-starter
 
 Then, install the required dependencies:
 
- $ npm i
+ $ bundle && npm i
+
+NOTE: The `bundle` command is configured to install gems within this project, under the [.path]_rubygems/_ directory.
+As normal, the `npm i` command installs Node.js modules into the [.path]_node_modules/_ directory.
 
 Now you're all set to build the presentation!
 
