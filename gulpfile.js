@@ -9,7 +9,6 @@ var pkg = require('./package.json'),
   ghpages = require('gh-pages'),
   gulp = require('gulp'),
   gutil = require('gulp-util'),
-  jade = require('gulp-jade'),
   path = require('path'),
   plumber = require('gulp-plumber'), // plumber prevents pipe breaking caused by errors thrown by plugins
   rename = require('gulp-rename'),
@@ -28,16 +27,7 @@ gulp.task('js', ['clean:js'], function() {
     .pipe(buffer())
     .pipe(isDist ? uglify() : through())
     .pipe(rename('build.js'))
-    .pipe(gulp.dest('public/build'))
-    .pipe(connect.reload());
-});
-
-gulp.task('html', ['clean:html'], function() {
-  return gulp.src('src/index.jade')
-    .pipe(isDist ? through() : plumber())
-    .pipe(jade({ pretty: '  ' }))
-    .pipe(rename('index.html'))
-    .pipe(gulp.dest('public'))
+    .pipe(gulp.dest('build/bespoke/build'))
     .pipe(connect.reload());
 });
 
@@ -48,62 +38,33 @@ gulp.task('css', ['clean:css'], function() {
     .pipe(autoprefixer({ browsers: ['last 2 versions'], cascade: false }))
     .pipe(isDist ? csso() : through())
     .pipe(rename('build.css'))
-    .pipe(gulp.dest('public/build'))
+    .pipe(gulp.dest('build/bespoke/build'))
     .pipe(connect.reload());
-});
-
-gulp.task('fonts', ['clean:fonts'], function() {
-  return gulp.src('src/fonts/*')
-    .pipe(gulp.dest('public/fonts'))
-    .pipe(connect.reload());
-});
-
-gulp.task('images', ['clean:images'], function() {
-  return gulp.src('src/images/**/*')
-    .pipe(gulp.dest('public/images'))
-    .pipe(connect.reload());
-});
-
-gulp.task('clean', function() {
-  return del('public');
-});
-
-gulp.task('clean:html', function() {
-  return del('public/index.html');
 });
 
 gulp.task('clean:js', function() {
-  return del('public/build/build.js');
+  return del('build/bespoke/build/build.js');
 });
 
 gulp.task('clean:css', function() {
-  return del('public/build/build.css');
-});
-
-gulp.task('clean:fonts', function() {
-  return del('public/fonts');
-});
-
-gulp.task('clean:images', function() {
-  return del('public/images');
+  return del('build/bespoke/build/build.css');
 });
 
 gulp.task('connect', ['build'], function() {
-  connect.server({ root: 'public', port: 8000, livereload: true });
+  connect.server({ root: 'build/bespoke', port: 8000, livereload: true });
 });
 
 gulp.task('watch', function() {
-  gulp.watch('src/**/*.jade', ['html']);
   gulp.watch('src/scripts/**/*.js', ['js']);
   gulp.watch('src/styles/**/*.styl', ['css']);
-  gulp.watch('src/images/**/*', ['images']);
-  gulp.watch('src/fonts/*', ['fonts']);
 });
 
+// TODO use Gradle to handle deploy
 gulp.task('deploy', ['clean', 'build'], function(done) {
-  ghpages.publish(path.join(__dirname, 'public'), { logger: gutil.log }, done);
+  ghpages.publish(path.join(__dirname, 'build/bespoke'), { logger: gutil.log }, done);
 });
 
-gulp.task('build', ['js', 'html', 'css', 'fonts', 'images']);
+gulp.task('clean', ['clean:js', 'clean:css']);
+gulp.task('build', ['js', 'css']);
 gulp.task('serve', ['connect', 'watch']);
 gulp.task('default', ['build']);

@@ -2,45 +2,77 @@
 :experimental:
 
 A starter presentation for Bespoke.js.
+This project uses Gradle to drive the build and integrates the Asciidoctor Bespoke.js converter (aka bespoke backend) to generate the HTML component from AsciiDoc.
 
 == Building the presentation
 
 === Prerequisites
 
-In order to use this project, you must first satisify the prerequisites of Bespoke.js.
+In order to use this project, you only need to be able to run Gradle (specifically, the Gradle Wrappper).
+To run Gradle, you need:
 
-. https://nodejs.org[Node.js] >= 0.12 footnote:[We strongly recommend using https://github.com/creationix/nvm[nvm] to manage Node.]
-. http://gulpjs.com[Gulp] (command line interface only)
+. Java Development Kit (JDK) (typically http://openjdk.java.net/install[OpenJDK] or http://www.oracle.com/technetwork/java/javase/downloads/index.html[Oracle JDK]) footnote:[We strongly recommend using http://www.jenv.be[jenv] to manage the JDK.]
 
- $ npm install -g gulp-cli
+Gradle takes care of the rest!
 
 === Setup
 
 Next, clone the repository and switch to the project directory:
 
- $ git clone https://github.com/opendevise/presentation-bespoke-starter.git
+ $ git clone -b asciidoc-gradle https://github.com/opendevise/presentation-bespoke-starter.git
    cd presentation-bespoke-starter
 
-Then, install the required dependencies:
+That's it!
+You're all set to build the presentation!
+Gradle will setup anything it needs on the first run.
 
- $ npm i
+.About the Build
+ifdef::env-github[.+++<h4>About the Build</h4>+++]
+****
+The Gradle build uses the following plugins for this project:
 
-Now you're all set to build the presentation!
+Gradle plugin for Node.js::
+Used to manage Node.js and Node.js packages.
+This plugin is configured to install Node.js into the [.path]_gradle/nodejs_ directory and to install Node.js packages into the [.path]_node_modules/_ directory.
+
+JRuby Gradle plugin::
+Used to manage Ruby gems.
+This plugin is configured to install Ruby gems into the [.path]_rubygems/jruby_ directory.
+
+Asciidoctor Gradle plugin::
+Used to interface with Asciidoctor and manage additional assets.
+
+Gradle plugin for Gulp::
+Used to interface with the Gulp build.
+****
 
 === Building the static version
 
 You can build a static version of the slides using the following command:
 
- $ gulp
+ $ ./gradlew build
 
-The files are built into the _public_ directory.
-You can then view the slides by navigating to _public/index.html_ in your browser.
+The files are built into the _build/bespoke_ directory.
+You can view the slides by navigating to _build/bespoke/index.html_ in your browser.
 
 === Launching the preview server
 
-The preview server will monitor files for changes and automatically update the presentation.
+The preview server makes the presentation available through a local URL.
 You can launch the preview server using:
 
- $ gulp serve
+ $ ./gradlew serve
 
 Once the server is running, you can view the slides by navigating to \http://localhost:8000 in your browser.
+
+== Areas of Improvement
+
+The eventual goal is to get Gradle to do all the work of building the presentation instead of relying on Node.js, npm and Gulp.
+
+Here's what's left to achieve that goal:
+
+* Use Gradle to serve presentation locally.
+* Sort out how to enable live reload workflow (Gradle watch + Gulp watch?).
+* Publish to GitHub Pages using https://github.com/ajoberstar/gradle-git[gradle-git].
+* Use https://github.com/craigburke/client-dependencies-gradle[client-dependencies-gradle] to install Node.js packages.
+* Use https://github.com/nebula-plugins/gradle-webpack-plugin[gradle-webpack-plugin] to bundle JavaScript instead of using Gulp build.
+* Get Gradle to compile Stylus (or switch to another CSS preprocessor).
