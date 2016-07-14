@@ -1,4 +1,5 @@
 'use strict';
+
 var pkg = require('./package.json'),
   autoprefixer = require('gulp-autoprefixer'),
   browserify = require('browserify'),
@@ -105,5 +106,7 @@ gulp.task('deploy', ['clean', 'build'], function(done) {
 });
 
 gulp.task('build', ['js', 'html', 'css', 'fonts', 'images']);
+
 gulp.task('serve', ['connect', 'watch']);
+
 gulp.task('default', ['build']);
