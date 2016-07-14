@@ -9,9 +9,9 @@ var pkg = require('./package.json'),
   ghpages = require('gh-pages'),
   gulp = require('gulp'),
   gutil = require('gulp-util'),
-  jade = require('gulp-jade'),
   path = require('path'),
   plumber = require('gulp-plumber'), // plumber prevents pipe breaking caused by errors thrown by plugins
+  pug = require('gulp-pug'),
   rename = require('gulp-rename'),
   source = require('vinyl-source-stream'),
   stylus = require('gulp-stylus'),
@@ -33,9 +33,9 @@ gulp.task('js', ['clean:js'], function() {
 });
 
 gulp.task('html', ['clean:html'], function() {
-  return gulp.src('src/index.jade')
+  return gulp.src('src/index.pug')
     .pipe(isDist ? through() : plumber())
-    .pipe(jade({ pretty: '  ' }))
+    .pipe(pug({ pretty: '  ' }))
     .pipe(rename('index.html'))
     .pipe(gulp.dest('public'))
     .pipe(connect.reload());
@@ -93,7 +93,7 @@ gulp.task('connect', ['build'], function() {
 });
 
 gulp.task('watch', function() {
-  gulp.watch('src/**/*.jade', ['html']);
+  gulp.watch('src/**/*.pug', ['html']);
   gulp.watch('src/scripts/**/*.js', ['js']);
   gulp.watch('src/styles/**/*.styl', ['css']);
   gulp.watch('src/images/**/*', ['images']);
