@@ -19,7 +19,8 @@ var pkg = require('./package.json'),
   stylus = require('gulp-stylus'),
   through = require('through'),
   uglify = require('gulp-uglify'),
-  isDist = process.argv.indexOf('deploy') >= 0;
+  isDist = process.argv.indexOf('deploy') >= 0,
+  MAX_HTML_FILE_SIZE = 100 * 1024 * 1024;
 
 gulp.task('js', ['clean:js'], function() {
   // see https://wehavefaces.net/gulp-browserify-the-gulp-y-way-bb359b3f9623
@@ -37,7 +38,7 @@ gulp.task('js', ['clean:js'], function() {
 gulp.task('html', ['clean:html'], function() {
   return gulp.src('src/index.adoc')
     .pipe(isDist ? through() : plumber())
-    .pipe(exec('bundle exec asciidoctor-bespoke -o - src/index.adoc', { pipeStdout: true }))
+    .pipe(exec('bundle exec asciidoctor-bespoke -o - src/index.adoc', { pipeStdout: true, maxBuffer: MAX_HTML_FILE_SIZE }))
     .pipe(exec.reporter({ stdout: false }))
     .pipe(rename('index.html'))
     .pipe(chmod(644))
