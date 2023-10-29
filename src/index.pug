@@ -26,6 +26,19 @@ html(lang='en')
         img(src='images/html5.svg')
 
       section
+        h2 Syntax Highlighting
+        h3 Powered by <a href="https://twitter.com/LeaVerou">Lea Verou</a>'s <a href="https://github.com/PrismJS/prism">Prism</a>
+        pre
+          code.language-javascript.
+            function hanoi (n, a, b, c) {
+              return n ? hanoi(n - 1, a, c, b)
+                  .concat([[a, b]])
+                  .concat(hanoi(n - 1, c, b, a)) : []
+            }
+            console.log(hanoi(3, 'left', 'right', 'mid')
+              .map((d) => `${d[0]} -&gt; ${d[1]}`))
+
+      section
         h2 The End
 
     script(src='build/build.js')

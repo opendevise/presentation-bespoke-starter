@@ -10,6 +10,7 @@
     "bespoke-hash": "~1.1",
     "bespoke-nav": "~1.0",
     "bespoke-overview": "~1.0",
+    "bespoke-prism": "~1.0",
     "bespoke-scale": "~1.0",
     "browserify": "~17.0",
     "del": "~6.1",

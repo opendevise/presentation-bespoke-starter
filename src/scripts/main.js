@@ -9,6 +9,7 @@ var isWebKit = 'webkitAppearance' in document.documentElement.style,
   hash = require('bespoke-hash'),
   nav = require('bespoke-nav'),
   overview = require('bespoke-overview'),
+  prism = require('bespoke-prism'),
   scale = require('bespoke-scale');
 
 bespoke.from({ parent: 'article.deck', slides: 'section' }, [
@@ -18,5 +19,6 @@ bespoke.from({ parent: 'article.deck', slides: 'section' }, [
   (scaleMethod ? scale(scaleMethod) : function(deck) {}),
   overview({ columns: 4 }),
   bullets('.build, .build-items > *:not(.build-items)'),
-  hash()
+  hash(),
+  prism()
 ]);
