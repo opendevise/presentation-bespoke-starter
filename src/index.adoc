@@ -5,12 +5,14 @@
 == Topic Slide
 
 == Key Points
+
 [%build]
 * First point
 * Second point
 * Final point
 
 == !
+
 image::html5.svg[]
 
 == The End

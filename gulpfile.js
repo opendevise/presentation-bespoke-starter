@@ -1,4 +1,5 @@
 'use strict';
+
 var pkg = require('./package.json'),
   autoprefixer = require('gulp-autoprefixer'),
   browserify = require('browserify'),
@@ -10,10 +11,10 @@ var pkg = require('./package.json'),
   exec = require('gulp-exec'),
   ghpages = require('gh-pages'),
   gulp = require('gulp'),
-  gutil = require('gulp-util'),
-  jade = require('gulp-jade'),
+  log = require('fancy-log'),
   path = require('path'),
   plumber = require('gulp-plumber'), // plumber prevents pipe breaking caused by errors thrown by plugins
+  pug = require('gulp-pug'),
   rename = require('gulp-rename'),
   source = require('vinyl-source-stream'),
   stylus = require('gulp-stylus'),
@@ -22,93 +23,84 @@ var pkg = require('./package.json'),
   isDist = process.argv.indexOf('deploy') >= 0,
   MAX_HTML_FILE_SIZE = 100 * 1024 * 1024;
 
-gulp.task('js', ['clean:js'], function() {
-  // see https://wehavefaces.net/gulp-browserify-the-gulp-y-way-bb359b3f9623
-  return browserify('src/scripts/main.js').bundle()
-    // NOTE this error handler fills the role of plumber() when working with browserify
-    .on('error', function(e) { if (isDist) { throw e; } else { gutil.log(e.stack); this.emit('end'); } })
-    .pipe(source('src/scripts/main.js'))
+gulp.task('clean:css', del.bind(null, 'public/build/build.css'));
+
+gulp.task('css', gulp.series('clean:css', function _css() {
+  return gulp.src('src/styles/main.styl')
+    .pipe(isDist ? through() : plumber())
+    .pipe(stylus({ 'include css': true, paths: ['./node_modules'] }))
+    .pipe(autoprefixer({ cascade: false }))
+    .pipe(isDist ? csso() : through())
+    .pipe(rename('build.css'))
+    .pipe(gulp.dest('public/build'))
+    .pipe(connect.reload());
+}));
+
+gulp.task('clean:fonts', del.bind(null, 'public/fonts'));
+
+gulp.task('fonts', gulp.series('clean:fonts', function _fonts() {
+  return gulp.src('src/fonts/*')
+    .pipe(gulp.dest('public/fonts'))
+    .pipe(connect.reload());
+}));
+
+gulp.task('clean:html', del.bind(null, 'public/index.html'));
+
+gulp.task('html', gulp.series('clean:html', function _html() {
+  return gulp.src('src/index.adoc')
+    .pipe(isDist ? through() : plumber())
+    .pipe(exec('bundle exec asciidoctor-bespoke -o - src/index.adoc', { pipeStdout: true, maxBuffer: MAX_HTML_FILE_SIZE }))
+    .pipe(rename('index.html'))
+    .pipe(chmod(0o644))
+    .pipe(gulp.dest('public'))
+    .pipe(connect.reload());
+}));
+
+gulp.task('clean:images', del.bind(null, 'public/images'));
+
+gulp.task('images', gulp.series('clean:images', function _images() {
+  return gulp.src('src/images/**/*')
+    .pipe(gulp.dest('public/images'))
+    .pipe(connect.reload());
+}));
+
+gulp.task('clean:js', del.bind(null, 'public/build/build.js'));
+
+gulp.task('js', gulp.series('clean:js', function _js() {
+  return browserify('src/scripts/main.js', { detectGlobals: false })
+    .plugin('browser-pack-flat/plugin')
+    .bundle()
+    .on('error', function(e) { if (isDist) { throw e; } else { log(e.stack); this.emit('end'); } })
+    .pipe(source('main.bundle.js'))
     .pipe(buffer())
     .pipe(isDist ? uglify() : through())
     .pipe(rename('build.js'))
     .pipe(gulp.dest('public/build'))
     .pipe(connect.reload());
-});
+}));
 
-gulp.task('html', ['clean:html'], function() {
-  return gulp.src('src/index.adoc')
-    .pipe(isDist ? through() : plumber())
-    .pipe(exec('bundle exec asciidoctor-bespoke -o - src/index.adoc', { pipeStdout: true, maxBuffer: MAX_HTML_FILE_SIZE }))
-    .pipe(exec.reporter({ stdout: false }))
-    .pipe(rename('index.html'))
-    .pipe(chmod(644))
-    .pipe(gulp.dest('public'))
-    .pipe(connect.reload());
-});
+gulp.task('build', gulp.series('js', 'html', 'css', 'fonts', 'images'));
 
-gulp.task('css', ['clean:css'], function() {
-  return gulp.src('src/styles/main.styl')
-    .pipe(isDist ? through() : plumber())
-    .pipe(stylus({ 'include css': true, paths: ['./node_modules'] }))
-    .pipe(autoprefixer({ browsers: ['last 2 versions'], cascade: false }))
-    .pipe(isDist ? csso() : through())
-    .pipe(rename('build.css'))
-    .pipe(gulp.dest('public/build'))
-    .pipe(connect.reload());
-});
+gulp.task('clean', del.bind(null, 'public'));
 
-gulp.task('fonts', ['clean:fonts'], function() {
-  return gulp.src('src/fonts/*')
-    .pipe(gulp.dest('public/fonts'))
-    .pipe(connect.reload());
-});
+gulp.task('deploy', gulp.series('clean', 'build', function _deploy(done) {
+  ghpages.publish(path.join(__dirname, 'public'), { logger: log }, done);
+}));
 
-gulp.task('images', ['clean:images'], function() {
-  return gulp.src('src/images/**/*')
-    .pipe(gulp.dest('public/images'))
-    .pipe(connect.reload());
-});
-
-gulp.task('clean', function() {
-  return del('public');
-});
-
-gulp.task('clean:html', function() {
-  return del('public/index.html');
-});
-
-gulp.task('clean:js', function() {
-  return del('public/build/build.js');
-});
-
-gulp.task('clean:css', function() {
-  return del('public/build/build.css');
-});
-
-gulp.task('clean:fonts', function() {
-  return del('public/fonts');
-});
-
-gulp.task('clean:images', function() {
-  return del('public/images');
-});
-
-gulp.task('connect', ['build'], function() {
+gulp.task('connect', gulp.series('build', function _connect(done) {
   connect.server({ root: 'public', port: 8000, livereload: true });
+  done();
+}));
+
+gulp.task('watch', function _watch(done) {
+  gulp.watch('src/**/*.pug', gulp.series('html'));
+  gulp.watch('src/scripts/**/*.js', gulp.series('js'));
+  gulp.watch('src/styles/**/*.styl', gulp.series('css'));
+  gulp.watch('src/images/**/*', gulp.series('images'));
+  gulp.watch('src/fonts/*', gulp.series('fonts'));
+  done();
 });
 
-gulp.task('watch', function() {
-  gulp.watch('src/**/*.adoc', ['html']);
-  gulp.watch('src/scripts/**/*.js', ['js']);
-  gulp.watch('src/styles/**/*.styl', ['css']);
-  gulp.watch('src/images/**/*', ['images']);
-  gulp.watch('src/fonts/*', ['fonts']);
-});
+gulp.task('serve', gulp.series('connect', 'watch'));
 
-gulp.task('deploy', ['clean', 'build'], function(done) {
-  ghpages.publish(path.join(__dirname, 'public'), { logger: gutil.log }, done);
-});
-
-gulp.task('build', ['js', 'html', 'css', 'fonts', 'images']);
-gulp.task('serve', ['connect', 'watch']);
-gulp.task('default', ['build']);
+gulp.task('default', gulp.series('build'));

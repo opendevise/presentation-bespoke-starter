@@ -11,18 +11,18 @@ In order to use this project, you must first satisify the prerequisites of Bespo
 
 For Bespoke.js::
 
-. https://nodejs.org[Node.js] >= 0.12 footnote:[We strongly recommend using https://github.com/creationix/nvm[nvm] to manage Node.]
-. http://gulpjs.com[Gulp] (command line interface only)
+. https://nodejs.org[Node.js] >= 16
 
- $ npm install -g gulp-cli
+We strongly recommend using https://github.com/creationix/nvm[nvm] to manage Node.
 
 For Asciidoctor::
 
-. https://www.ruby-lang.org[Ruby] >= 2 footnote:[We strongly recommend using http://rvm.io[RVM] to manage Ruby.]
+. https://www.ruby-lang.org[Ruby] >= 2.7
 . http://bundler.io[Bundler]
 
- $ rvm use 2.3.0 --install # (optional)
- $ gem install bundler
+We strongly recommend using http://rvm.io[RVM] to manage Ruby.
+
+ $ rvm use 3.2.0 --install # (optional)
 
 === Setup
 
@@ -33,9 +33,11 @@ Next, clone the repository and switch to the project directory:
 
 Then, install the required dependencies:
 
- $ bundle && npm i
+ $ bundle config set --local path .bundle/gems
+   bundle
+   npm i
 
-NOTE: The `bundle` command is configured to install gems within this project, under the [.path]_rubygems/_ directory.
+NOTE: The `bundle` command is configured to install gems within this project, under the [.path]_.bundle/gems_ directory.
 As normal, the `npm i` command installs Node.js modules into the [.path]_node_modules/_ directory.
 
 Now you're all set to build the presentation!
@@ -44,7 +46,7 @@ Now you're all set to build the presentation!
 
 You can build a static version of the slides using the following command:
 
- $ gulp
+ $ npx gulp
 
 The files are built into the _public_ directory.
 You can then view the slides by navigating to _public/index.html_ in your browser.
@@ -54,6 +56,6 @@ You can then view the slides by navigating to _public/index.html_ in your browse
 The preview server will monitor files for changes and automatically update the presentation.
 You can launch the preview server using:
 
- $ gulp serve
+ $ npx gulp serve
 
 Once the server is running, you can view the slides by navigating to \http://localhost:8000 in your browser.
