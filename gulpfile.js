@@ -65,7 +65,7 @@ gulp.task('images', gulp.series('clean:images', function _images() {
 gulp.task('clean:js', del.bind(null, 'public/build/build.js'));
 
 gulp.task('js', gulp.series('clean:js', function _js() {
-  return browserify('src/scripts/main.js', { detectGlobals: true })
+  return browserify('src/scripts/main.js', { detectGlobals: false })
     .on('error', function (e) { if (isDist) throw e; log(e.stack || e); this.emit('end'); })
     .bundle()
     .pipe(source('main.bundle.js'))
