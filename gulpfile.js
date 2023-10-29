@@ -20,7 +20,13 @@ var pkg = require('./package.json'),
   stylus = require('gulp-stylus'),
   through = require('through'),
   uglify = require('gulp-uglify'),
-  isDist = process.argv.indexOf('deploy') >= 0,
+  isDist = process.argv.indexOf('publish') >= 0,
+  // browserifyPlumber fills the role of plumber() when working with browserify
+  browserifyPlumber = function(e) {
+    if (isDist) throw e;
+    log(e.stack);
+    this.emit('end');
+  },
   MAX_HTML_FILE_SIZE = 100 * 1024 * 1024;
 
 gulp.task('clean:css', del.bind(null, 'public/build/build.css'));
@@ -70,7 +76,7 @@ gulp.task('js', gulp.series('clean:js', function _js() {
   return browserify('src/scripts/main.js', { detectGlobals: false })
     .plugin('browser-pack-flat/plugin')
     .bundle()
-    .on('error', function(e) { if (isDist) { throw e; } else { log(e.stack); this.emit('end'); } })
+    .on('error', browserifyPlumber)
     .pipe(source('main.bundle.js'))
     .pipe(buffer())
     .pipe(isDist ? uglify() : through())
@@ -83,9 +89,11 @@ gulp.task('build', gulp.series('js', 'html', 'css', 'fonts', 'images'));
 
 gulp.task('clean', del.bind(null, 'public'));
 
-gulp.task('deploy', gulp.series('clean', 'build', function _deploy(done) {
+gulp.task('publish', gulp.series('clean', 'build', function _deploy(done) {
   ghpages.publish(path.join(__dirname, 'public'), { logger: log }, done);
 }));
+
+gulp.task('deploy', gulp.series('publish'));
 
 gulp.task('connect', gulp.series('build', function _connect(done) {
   connect.server({ root: 'public', port: 8000, livereload: true });
