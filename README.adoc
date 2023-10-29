@@ -7,12 +7,11 @@ A starter presentation for Bespoke.js.
 
 === Prerequisites
 
-In order to use this project, you must first satisify the prerequisites of Bespoke.js.
+In order to use this project, you must first satisify the following prerequisite of Bespoke.js.
 
-. https://nodejs.org[Node.js] >= 0.12 footnote:[We strongly recommend using https://github.com/creationix/nvm[nvm] to manage Node.]
-. http://gulpjs.com[Gulp] (command line interface only)
+https://nodejs.org[Node.js] >= 16
 
- $ npm install -g gulp-cli
+We strongly recommend using https://github.com/creationix/nvm[nvm] to manage Node.
 
 === Setup
 
@@ -31,7 +30,7 @@ Now you're all set to build the presentation!
 
 You can build a static version of the slides using the following command:
 
- $ gulp
+ $ npx gulp
 
 The files are built into the _public_ directory.
 You can view the slides by navigating to _public/index.html_ in your browser.
@@ -41,6 +40,6 @@ You can view the slides by navigating to _public/index.html_ in your browser.
 The preview server will monitor files for changes and automatically update the presentation.
 You can launch the preview server using:
 
- $ gulp serve
+ $ npx gulp serve
 
 Once the server is running, you can view the slides by navigating to \http://localhost:8000 in your browser.
