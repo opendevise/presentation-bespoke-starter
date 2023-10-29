@@ -63,11 +63,11 @@ gulp.task('images', gulp.series('clean:images', function _images() {
 gulp.task('clean:js', del.bind(null, 'public/build/build.js'));
 
 gulp.task('js', gulp.series('clean:js', function _js() {
-  // see https://wehavefaces.net/gulp-browserify-the-gulp-y-way-bb359b3f9623
-  return browserify('src/scripts/main.js').bundle()
-    // NOTE this error handler fills the role of plumber() when working with browserify
+  return browserify('src/scripts/main.js', { detectGlobals: false })
+    .plugin('browser-pack-flat/plugin')
+    .bundle()
     .on('error', function(e) { if (isDist) { throw e; } else { log(e.stack); this.emit('end'); } })
-    .pipe(source('src/scripts/main.js'))
+    .pipe(source('main.bundle.js'))
     .pipe(buffer())
     .pipe(isDist ? uglify() : through())
     .pipe(rename('build.js'))
