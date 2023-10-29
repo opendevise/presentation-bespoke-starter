@@ -4,6 +4,7 @@ var pkg = require('./package.json'),
   autoprefixer = require('gulp-autoprefixer'),
   browserify = require('browserify'),
   buffer = require('vinyl-buffer'),
+  chmod = require('gulp-chmod'),
   connect = require('gulp-connect'),
   csso = require('gulp-csso'),
   del = require('del'),
@@ -48,6 +49,7 @@ gulp.task('html', gulp.series('clean:html', function _html() {
     .pipe(isDist ? through() : plumber())
     .pipe(pug({ pretty: '  ' }))
     .pipe(rename('index.html'))
+    .pipe(chmod(0o644))
     .pipe(gulp.dest('public'))
     .pipe(connect.reload());
 }));

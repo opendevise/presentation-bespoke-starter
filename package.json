@@ -18,6 +18,7 @@
     "gh-pages": "~6.0",
     "gulp": "~4.0",
     "gulp-autoprefixer": "~8.0",
+    "gulp-chmod": "~3.1",
     "gulp-connect": "~5.7",
     "gulp-csso": "~4.0",
     "gulp-plumber": "~1.2",
