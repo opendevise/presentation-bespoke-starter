@@ -11,7 +11,6 @@
     "bespoke-nav": "~1.0",
     "bespoke-overview": "~1.0",
     "bespoke-scale": "~1.0",
-    "browser-pack-flat": "~3.5",
     "browserify": "~17.0",
     "del": "~6.1",
     "fancy-log": "~2.0",

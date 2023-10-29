@@ -21,12 +21,6 @@ var pkg = require('./package.json'),
   through = require('through'),
   uglify = require('gulp-uglify'),
   isDist = process.argv.indexOf('publish') >= 0,
-  // browserifyPlumber fills the role of plumber() when working with browserify
-  browserifyPlumber = function(e) {
-    if (isDist) throw e;
-    log(e.stack);
-    this.emit('end');
-  },
   MAX_HTML_FILE_SIZE = 100 * 1024 * 1024;
 
 gulp.task('clean:css', del.bind(null, 'public/build/build.css'));
@@ -73,10 +67,9 @@ gulp.task('images', gulp.series('clean:images', function _images() {
 gulp.task('clean:js', del.bind(null, 'public/build/build.js'));
 
 gulp.task('js', gulp.series('clean:js', function _js() {
-  return browserify('src/scripts/main.js', { detectGlobals: false })
-    .plugin('browser-pack-flat/plugin')
+  return browserify('src/scripts/main.js', { detectGlobals: true })
+    .on('error', function (e) { if (isDist) throw e; log(e.stack || e); this.emit('end'); })
     .bundle()
-    .on('error', browserifyPlumber)
     .pipe(source('main.bundle.js'))
     .pipe(buffer())
     .pipe(isDist ? uglify() : through())
