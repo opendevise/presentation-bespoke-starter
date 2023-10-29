@@ -22,7 +22,7 @@ For Asciidoctor::
 
 We strongly recommend using http://rvm.io[RVM] to manage Ruby.
 
- $ rvm use 3.2.0 --install # (optional)
+ $ rvm use 3.2 --install # (optional)
 
 === Setup
 
