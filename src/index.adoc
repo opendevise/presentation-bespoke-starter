@@ -1,6 +1,7 @@
 = Bespoke.js Starter Presentation
 :!sectids:
 :imagesdir: images
+:source-highlighter: highlight.js
 
 == Topic Slide
 
@@ -14,5 +15,21 @@
 == !
 
 image::html5.svg[]
+
+== Syntax Highlighting
+
+[discrete]
+=== Powered by highlight.js
+
+[,js]
+----
+function hanoi (n, a, b, c) {
+  return n ? hanoi(n - 1, a, c, b)
+      .concat([[a, b]])
+      .concat(hanoi(n - 1, c, b, a)) : []
+}
+console.log(hanoi(3, 'left', 'right', 'mid')
+  .map((d) => `${d[0]} -&gt; ${d[1]}`))
+----
 
 == The End
